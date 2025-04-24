@@ -32,10 +32,10 @@ class rotasSubCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async deletar(req, res){
-        const { id } = req.params;
+        const { id_subcategoria } = req.params;
         try{
             const subcategoria = await BD.query(
-                'UPDATE subcategorias set ativo = false WHERE id_subcategoria = $1', [id]);
+                'UPDATE subcategorias set ativo = false WHERE id_subcategoria = $1', [id_subcategoria]);
             return res.status(200).json({message: "Sub-Categoria desativada com sucesso"});
         } catch(error){
             res.status(500).json({message: 'Erro ao desativar Sub-Categoria', error: error});
@@ -45,9 +45,9 @@ class rotasSubCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async consultaPorId(req, res){
-        const { id } = req.params;
+        const { id_subcategoria } = req.params;
         try{
-            const subcategoria = await BD.query('SELECT * FROM subcategorias WHERE id_subcategoria = $1 ', [id])
+            const subcategoria = await BD.query('SELECT * FROM subcategorias WHERE id_subcategoria = $1 ', [id_subcategoria])
             res.status(200).json(subcategoria.rows[0]);
         }catch(error){
             res.status(500).json({message: 'Erro ao consultar a Sub-Categoria', error: error});
@@ -58,8 +58,8 @@ class rotasSubCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizarTodos(req, res){
-        const { id } = req.params;
-        const {nome, id_categoria, gasto_fixo, ativo, id_subcategoria} = req.body;
+        const { id_subcategoria } = req.params;
+        const {nome, id_categoria, gasto_fixo, ativo} = req.body;
 
         try {
             const subcategoria = await BD.query(
@@ -77,8 +77,8 @@ class rotasSubCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizar(req, res){
-        const { id } = req.params;
-        const { nome, id_categoria, gasto_fixo, ativo, id_subcategoria} = req.body;
+        const { id_subcategoria } = req.params;
+        const { nome, id_categoria, gasto_fixo, ativo} = req.body;
         try{
             //Inicializar arrays(vetores) para armazenar os campos e valores a serem atualizados
             const campos = [];
@@ -101,10 +101,6 @@ class rotasSubCategorias{
                 campos.push(`ativo = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
                 valores.push(ativo);
             }
-            if(id_subcategoria !== undefined){
-                campos.push(`id_subcategoria = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
-                valores.push(id_subcategoria);
-            }
             if(campos.length === 0){
                 return res.status(400).json({message:'Nenhum campo fornecido para atualização'})
             }
@@ -113,7 +109,7 @@ class rotasSubCategorias{
             // valores.push(id);
 
             //montamos a query dinamicamente
-            const query = `UPDATE subcategorias SET ${campos.join(', ')} WHERE id_subcategoria = ${id} RETURNING *`;
+            const query = `UPDATE subcategorias SET ${campos.join(', ')} WHERE id_subcategoria = ${id_subcategoria} RETURNING *`;
             //executar a query
             const subcategoria = await BD.query(query, valores);
 

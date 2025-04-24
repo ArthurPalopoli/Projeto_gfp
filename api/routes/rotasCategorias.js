@@ -36,22 +36,22 @@ class rotasCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async deletar(req, res){
-        const { id } = req.params;
+        const { id_categoria } = req.params;
         try{
             const categoria = await BD.query(
-                'UPDATE categorias set ativo = false WHERE id_categoria = $1', [id]);
-            return res.status(200).json({message: "Categoria deletada com sucesso"});
+                'UPDATE categorias set ativo = false WHERE id_categoria = $1', [id_categoria]);
+            return res.status(200).json({message: "Categoria desativada com sucesso"});
         } catch(error){
-            res.status(500).json({message: 'Erro ao deletar categoria', error: error});
+            res.status(500).json({message: 'Erro ao desativar categoria', error: error});
         }
     }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async consultaPorId(req, res){
-        const { id } = req.params;
+        const { id_categoria } = req.params;
         try{
-            const categoria = await BD.query('SELECT * FROM categorias WHERE id_categoria = $1 ', [id])
+            const categoria = await BD.query('SELECT * FROM categorias WHERE id_categoria = $1 ', [id_categoria])
             res.status(200).json(categoria.rows[0]);
         }catch(error){
             res.status(500).json({message: 'Erro ao consultar o usuario', error: error});
@@ -62,8 +62,8 @@ class rotasCategorias{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizarTodos(req, res){
-        const { id } = req.params;
-        const { id_categoria, nome, tipo_transacao, gasto_fixo, ativo, id_usuario } = req.body;
+        const { id_categoria } = req.params;
+        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario } = req.body;
 
         try {
             const categoria = await BD.query(
@@ -81,8 +81,8 @@ class rotasCategorias{
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizar(req, res){
-        const { id } = req.params;
-        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario, id_categoria} = req.body;
+        const { id_categoria } = req.params;
+        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario} = req.body;
         try{
             //Inicializar arrays(vetores) para armazenar os campos e valores a serem atualizados
             const campos = [];
@@ -109,10 +109,6 @@ class rotasCategorias{
                 campos.push(`ativo = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
                 valores.push(ativo);
             }
-            if(id_categoria !== undefined){
-                campos.push(`id_categoria = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
-                valores.push(id_categoria);
-            }
             if(campos.length === 0){
                 return res.status(400).json({message:'Nenhum campo fornecido para atualização'})
             }
@@ -121,7 +117,7 @@ class rotasCategorias{
             // valores.push(id);
 
             //montamos a query dinamicamente
-            const query = `UPDATE categorias SET ${campos.join(', ')} WHERE id_categoria = ${id} RETURNING *`;
+            const query = `UPDATE categorias SET ${campos.join(', ')} WHERE id_categoria = ${id_categoria} RETURNING *`;
             //executar a query
             const categoria = await BD.query(query, valores);
 

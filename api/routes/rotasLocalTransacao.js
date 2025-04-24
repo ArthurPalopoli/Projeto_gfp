@@ -32,10 +32,10 @@ class rotasLocalTransacao{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async deletar(req, res){
-        const { id } = req.params;
+        const { id_local_transacao } = req.params;
         try{
             const local_transacao = await BD.query(
-                'UPDATE local_transacao set ativo = false WHERE id_local_transacao = $1', [id]);
+                'UPDATE local_transacao set ativo = false WHERE id_local_transacao = $1', [id_local_transacao]);
             return res.status(200).json({message: " Local Transação desativada com sucesso"});
         } catch(error){
             res.status(500).json({message: 'Erro ao desativar Local Transação', error: error});
@@ -45,9 +45,9 @@ class rotasLocalTransacao{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async consultaPorId(req, res){
-        const { id } = req.params;
+        const { id_local_transacao } = req.params;
         try{
-            const local_transacao = await BD.query('SELECT * FROM local_transacao WHERE id_local_transacao = $1 ', [id])
+            const local_transacao = await BD.query('SELECT * FROM local_transacao WHERE id_local_transacao = $1 ', [id_local_transacao])
             res.status(200).json(local_transacao.rows[0]);
         }catch(error){
             res.status(500).json({message: 'Erro ao consultar a Local Transação', error: error});
@@ -77,7 +77,7 @@ class rotasLocalTransacao{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizar(req, res){
-        const { id } = req.params;
+        const { id_local_transacao } = req.params;
         const { nome, tipo_local, saldo, ativo} = req.body;
         try{
             //Inicializar arrays(vetores) para armazenar os campos e valores a serem atualizados
@@ -106,10 +106,10 @@ class rotasLocalTransacao{
             }
 
             //adicionar o id ao final de valores
-            // valores.push(id);
+            // valores.push(id_local_transacao);
 
             //montamos a query dinamicamente
-            const query = `UPDATE local_transacao SET ${campos.join(', ')} WHERE id_local_transacao = ${id} RETURNING *`;
+            const query = `UPDATE local_transacao SET ${campos.join(', ')} WHERE id_local_transacao = ${id_local_transacao} RETURNING *`;
             //executar a query
             const local_transacao = await BD.query(query, valores);
 

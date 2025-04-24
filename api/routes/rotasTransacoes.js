@@ -32,22 +32,22 @@ import { BD } from '../db.js';
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async deletar(req, res){
-        const { id } = req.params;
+        const { id_transacao } = req.params;
         try{
             const transacoes = await BD.query(
-                'DELETE from transacoes WHERE id_transacao = $1', [id]);
-            return res.status(200).json({message: " Transação desativada com sucesso"});
+                'DELETE from transacoes WHERE id_transacao = $1', [id_transacao]);
+            return res.status(200).json({message: " Transação deletada com sucesso"});
         } catch(error){
-            res.status(500).json({message: 'Erro ao desativar Transação', error: error});
+            res.status(500).json({message: 'Erro ao deletar Transação', error: error});
         }
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async consultaPorId(req, res){
-        const { id } = req.params;
+        const { id_transacao } = req.params;
         try{
-            const transacoes = await BD.query('SELECT * FROM transacoes WHERE id_transacao = $1 ', [id])
+            const transacoes = await BD.query('SELECT * FROM transacoes WHERE id_transacao = $1 ', [id_transacao])
             res.status(200).json(transacoes.rows[0]);
         }catch(error){
             res.status(500).json({message: 'Erro ao consultar a Local Transação', error: error});

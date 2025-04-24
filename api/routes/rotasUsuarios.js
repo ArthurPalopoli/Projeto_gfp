@@ -88,10 +88,10 @@ class rotasUsuarios{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async deletar(req, res){
-        const { id } = req.params;
+        const { id_usuario } = req.params;
         try{
             const usuario = await BD.query(
-                'UPDATE usuarios set ativo = false WHERE id_usuario = $1', [id]);
+                'UPDATE usuarios set ativo = false WHERE id_usuario = $1', [id_usuario]);
             return res.status(200).json({message: "Usuario deletado com sucesso"});
         } catch(error){
             res.status(500).json({message: 'Erro ao deletar usuario', error: error});
@@ -101,9 +101,9 @@ class rotasUsuarios{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async consultaPorId(req, res){
-        const { id } = req.params;
+        const { id_usuario } = req.params;
         try{
-            const usuario = await BD.query('SELECT * FROM usuarios WHERE id_usuario = $1 ', [id])
+            const usuario = await BD.query('SELECT * FROM usuarios WHERE id_usuario = $1 ', [id_usuario])
             res.status(200).json(usuario.rows[0]);
         }catch(error){
             res.status(500).json({message: 'Erro ao consultar o usuario', error: error});
@@ -114,8 +114,8 @@ class rotasUsuarios{
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizarTodos(req, res){
-        const { id } = req.params;
-        const {nome, email, senha, tipo_acesso, ativo, id_usuario } = req.body;
+        const { id_usuario } = req.params;
+        const {nome, email, senha, tipo_acesso, ativo } = req.body;
         try{
             const usuario = await BD.query(
                 'UPDATE usuarios SET nome = $1, email = $2, senha = $3, tipo_acesso = $4, ativo = $5 WHERE id_usuario = $6 RETURNING *',
@@ -129,79 +129,64 @@ class rotasUsuarios{
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     static async atualizar(req, res){
-        const { id } = req.params;
-        const { nome, email, senha, tipo_acesso, ativo, id_usuario } = req.body;
+        const { id_usuario } = req.params;
+        const { nome, email, senha, tipo_acesso, ativo } = req.body;
         try{
-            //Inicializar arrays(vetores) para armazenar os campos e valores a serem atualizados
             const campos = [];
             const valores = [];
 
-            //Verificar quais campos foram fornecidos
             if(nome !== undefined){
-                campos.push(`nome = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                campos.push(`nome = $${valores.length + 1}`) 
                 valores.push(nome);
             }
             if(email !== undefined){
-                campos.push(`email = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                campos.push(`email = $${valores.length + 1}`) 
                 valores.push(email);
             }
             if(senha !== undefined){
-                campos.push(`senha = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
-                valores.push(senha);
+                campos.push(`senha = $${valores.length + 1}`) 
+                const saltRounds = 10
+                const senhaCriptografada = await bcrypt.hash(senha, saltRounds)
+                valores.push(senhaCriptografada);
             }
             if(tipo_acesso !== undefined){
-                campos.push(`tipo_acesso = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                campos.push(`tipo_acesso = $${valores.length + 1}`) 
                 valores.push(tipo_acesso);
             }
             if(ativo !== undefined){
-                campos.push(`ativo = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                campos.push(`ativo = $${valores.length + 1}`) 
                 valores.push(ativo);
             }
-            if(id_usuario !== undefined){
-                campos.push(`id_usuario = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
-                valores.push(id_usuario);
-            }
-            if(campos.length === 0){
-                return res.status(400).json({message:'Nenhum campo fornecido para atualização'})
-            }
 
-            //adicionar o id ao final de valores
-            // valores.push(id);
+            valores.push(id_usuario); // adiciona o id como último parâmetro da query
 
-            //montamos a query dinamicamente
-            const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = ${id} RETURNING *`;
-            //executar a query
-            const usuario = await BD.query(query, valores);
+        const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = $${valores.length} RETURNING *`;
+        const usuario = await BD.query(query, valores);
 
-            //Verifica se o usuário foi atualizado
-            if(usuario.rows.length === 0){
-                return res.status(404).json({message: 'Usuario não encontrado'});
-            }
-            return res.status(200).json(usuario.rows[0]); 
+        if (usuario.rows.length === 0) {
+            return res.status(404).json({ message: 'Usuário não encontrado' });
         }
-        catch(error){
-            console.log(error.message);            
-            res.status(500).json({message: 'Erro ao atualizar usuario', error: error}); 
-        }
+
+        return res.status(200).json(usuario.rows[0]);
+
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao atualizar o usuário', error: error.message });
     }
 }
+}
 
-export function autenticarToken(req, res, nextb) {
-    //Extrair do token o cabecalho da requisição
-    const token = req.headers['authorization'];//Bearer<token>
+export function autenticarToken(req, res, next) {
 
-    //Verificar se o token foi fornecido na requisição
+    const token = req.headers['authorization'];
+
     if(!token) return res.status(403).json({mensagem: 'Token não fornecido'})
 
-    //Verificar a validade do Token
-    //jwt.verify que valida se o token é legitimo
-    jwt.verify(token.split('')[1], SECRET_KEY, (err, usuario) => {
+    jwt.verify(token.split(' ')[1], SECRET_KEY, (err, usuario) => {
         if(err) return res.status(403).json({mensagem: 'Token inválido'})
 
-        //Se o token for válido, adiciona os dados do usuario(decodificados no token)
-        //tornando essas informações disponíveis nas rotas que precisam da autenticação
+       
         req.usuario = usuario;
-        nextb();
+        next();
     })
 }
 
