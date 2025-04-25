@@ -62,7 +62,7 @@ class rotasUsuarios{
                 { id: usuario.id_usuario,
                     nome: usuario.nome, email: usuario.email },
                     SECRET_KEY,
-                        {expiresIn: '1h'}
+                        // {expiresIn: '1h'}
             )
 
             return res.status(200).json({ message: 'Login realizado com sucesso', token });
@@ -92,9 +92,9 @@ class rotasUsuarios{
         try{
             const usuario = await BD.query(
                 'UPDATE usuarios set ativo = false WHERE id_usuario = $1', [id_usuario]);
-            return res.status(200).json({message: "Usuario deletado com sucesso"});
+            return res.status(200).json({message: "Usuario desativado com sucesso"});
         } catch(error){
-            res.status(500).json({message: 'Erro ao deletar usuario', error: error});
+            res.status(500).json({message: 'Erro ao desativado usuario', error: error});
         }
     }
 

@@ -132,6 +132,35 @@ class rotasCategorias{
             res.status(500).json({message: 'Erro ao atualizar Categoria', error: error}); 
         }
     }
+
+    // filtrar por tipo de categoria
+    static async filtrarCategoria(req, res){
+        // o valor sera enviado por parametro na url, deve ser enviado dessa maneira
+        // tipo_transa
+        const { tipo_transacao } = req.query
+
+        try{
+            const filtros = []
+            const valores = []
+
+            if(tipo_transacao){
+                filtros.push(`tipo_transacao =$${valores.length + 1}`)
+                valores.push(tipo_transacao)
+            }
+            const query = `
+                SELECT * FROM categorias
+                ${filtros.length ? `WHERE ${filtros.join('AND')}` : ''} an ativo = true
+                ORDER BY id_categoria DESC
+            `
+
+            const resultado = await BD.query(query, valores)
+            res.staus(200).json(resultado.rows)
+
+        }catch(error) {
+            console.log(error);
+            res.staus(500).json({error: "Erro ao filtrar categorias", error: error.message})
+        }
+    }
 }
 
 // export function autenticarToken(req, res, nextb) {

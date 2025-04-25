@@ -1,5 +1,8 @@
+
 export default function Principal() {
     return (
-    <h1>Tela Principal</h1>
+        <div>
+            <h1>Bem vindo</h1>
+        </div>
     );
 }
