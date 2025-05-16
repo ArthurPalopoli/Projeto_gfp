@@ -125,6 +125,26 @@ class rotasSubCategorias{
         }
     }
 
+    static async filtrarNome(req, res){
+       const { nome } = req.query
+
+       try{
+            const query = `
+                SELECT * FROM subcategorias
+                WHERE nome LIKE $1 AND ativo = true
+                ORDER BY nome DESC
+            `
+            const valor = [`%${nome}%`]
+            const resposta = await BD.query(query, valor) 
+            return res.status(200).json(resposta.rows)
+
+       }catch(error){
+            console.error('Erro ao filtar nome', error)
+            return res.status(500).json({message: "Erro ao filtar nome", error: error.message})
+
+       }
+    }
+
 }
 
 

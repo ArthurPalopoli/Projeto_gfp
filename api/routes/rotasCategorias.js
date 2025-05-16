@@ -22,8 +22,6 @@ class rotasCategorias{
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-
     static async listarTodos(req, res){
         try{
             const categorias = await BD.query('SELECT * FROM categorias WHERE ativo = true');
@@ -135,52 +133,30 @@ class rotasCategorias{
 
     // filtrar por tipo de categoria
     static async filtrarCategoria(req, res){
-        // o valor sera enviado por parametro na url, deve ser enviado dessa maneira
-        // tipo_transa
-        const { tipo_transacao } = req.query
+       const { tipo_transacao } = req.query
 
-        try{
-            const filtros = []
-            const valores = []
-
-            if(tipo_transacao){
-                filtros.push(`tipo_transacao =$${valores.length + 1}`)
-                valores.push(tipo_transacao)
-            }
+       try{
             const query = `
                 SELECT * FROM categorias
-                ${filtros.length ? `WHERE ${filtros.join('AND')}` : ''} an ativo = true
-                ORDER BY id_categoria DESC
+                WHERE tipo_transacao = $1 AND ativo = true
+                ORDER BY nome DESC
             `
+            const valores = [tipo_transacao]
 
-            const resultado = await BD.query(query, valores)
-            res.staus(200).json(resultado.rows)
+            const resposta = await BD.query(query, valores) 
 
-        }catch(error) {
-            console.log(error);
-            res.staus(500).json({error: "Erro ao filtrar categorias", error: error.message})
-        }
+            return res.status(200).json(resposta.rows)
+
+       }catch(error){
+            console.error('Erro ao filtar categoria', error)
+            return res.status(500).json({message: "Erro ao filtar categoria", error: error.message})
+
+       }
     }
+
+    
 }
 
-// export function autenticarToken(req, res, nextb) {
-//     //Extrair do token o cabecalho da requisição
-//     const token = req.headers['authorization'];//Bearer<token>
-
-//     //Verificar se o token foi fornecido na requisição
-//     if(!token) return res.status(403).json({mensagem: 'Token não fornecido'})
-
-//     //Verificar a validade do Token
-//     //jwt.verify que valida se o token é legitimo
-//     jwt.verify(token.split('')[1], SECRET_KEY, (err, usuario) => {
-//         if(err) return res.status(403).json({mensagem: 'Token inválido'})
-
-//         //Se o token for válido, adiciona os dados do usuario(decodificados no token)
-//         //tornando essas informações disponíveis nas rotas que precisam da autenticação
-//         req.usuario = usuario;
-//         nextb();
-//     })
-// }
 
 
 export default rotasCategorias

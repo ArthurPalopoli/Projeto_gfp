@@ -65,7 +65,7 @@ class rotasUsuarios{
                         // {expiresIn: '1h'}
             )
 
-            return res.status(200).json({ message: 'Login realizado com sucesso', token });
+            return res.status(200).json({ message: 'Login realizado com sucesso', token, nome: usuario.nome, email: usuario.email, id_usuario: usuario.id_usuario });
             // return res.status(200).json({ message: 'Login realizado com sucesso' });
 
         } catch (error) {
@@ -160,19 +160,40 @@ class rotasUsuarios{
 
             valores.push(id_usuario); // adiciona o id como último parâmetro da query
 
-        const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = $${valores.length} RETURNING *`;
-        const usuario = await BD.query(query, valores);
+            const query = `UPDATE usuarios SET ${campos.join(', ')} WHERE id_usuario = $${valores.length} RETURNING *`;
+            const usuario = await BD.query(query, valores);
 
-        if (usuario.rows.length === 0) {
-            return res.status(404).json({ message: 'Usuário não encontrado' });
+            if (usuario.rows.length === 0) {
+                return res.status(404).json({ message: 'Usuário não encontrado' });
+            }
+
+            return res.status(200).json(usuario.rows[0]);
+
+        } catch (error) {
+            res.status(500).json({ message: 'Erro ao atualizar o usuário', error: error.message });
         }
-
-        return res.status(200).json(usuario.rows[0]);
-
-    } catch (error) {
-        res.status(500).json({ message: 'Erro ao atualizar o usuário', error: error.message });
     }
-}
+
+     static async filtrarNome(req, res){
+       const { nome } = req.query
+
+       try{
+            const query = `
+                SELECT * FROM usuarios
+                WHERE nome LIKE $1 AND ativo = true
+                ORDER BY nome DESC
+            `
+            const valor = [`%${nome}%`]
+            const resposta = await BD.query(query, valor) 
+            return res.status(200).json(resposta.rows)
+
+       }catch(error){
+            console.error('Erro ao filtar nome', error)
+            return res.status(500).json({message: "Erro ao filtar nome", error: error.message})
+
+       }
+    }
+
 }
 
 export function autenticarToken(req, res, next) {
@@ -189,6 +210,7 @@ export function autenticarToken(req, res, next) {
         next();
     })
 }
+
 
 
 export default rotasUsuarios
