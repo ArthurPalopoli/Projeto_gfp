@@ -61,7 +61,7 @@ class rotasCategorias{
 
     static async atualizarTodos(req, res){
         const { id_categoria } = req.params;
-        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario } = req.body;
+        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone } = req.body;
 
         try {
             const categoria = await BD.query(

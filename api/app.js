@@ -7,6 +7,9 @@ import rotasSubCategorias from './routes/rotasSubCategorias.js'
 import rotasContas from './routes/rotasContas.js'
 import rotasTransacoes from './routes/rotasTransacoes.js'
 
+import swaggerUi from 'swagger-ui-express'
+import swaggerSpec from './swagger.js'
+
 
 const app = express()
 testarConexao()
@@ -14,9 +17,11 @@ testarConexao()
 app.use(cors())
 app.use(express.json())
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec))
 app.get('/', (req, res) => {
-    res.send('API Funcionando')
+    res.redirect('/api-docs')
 })
+
 const porta = 3000
 app.listen(porta, () =>{
     console.log(`Api http://localhost:${porta}`)
@@ -29,9 +34,9 @@ app.post('/usuarios/login', rotasUsuarios.login)
 app.get('/usuarios/filtrarNome', rotasUsuarios.filtrarNome)
 app.get('/usuarios',  rotasUsuarios.listarTodos)
 app.delete('/usuarios/:id_usuario', rotasUsuarios.deletar)
-app.get('/usuarios/:id_usuario', autenticarToken, rotasUsuarios.consultaPorId)
-app.put('/usuarios/:id_usuario', autenticarToken, rotasUsuarios.atualizarTodos) 
-app.patch('/usuarios/:id_usuario', autenticarToken, rotasUsuarios.atualizar)
+app.get('/usuarios/:id_usuario', rotasUsuarios.consultaPorId)
+app.put('/usuarios/:id_usuario', rotasUsuarios.atualizarTodos) 
+app.patch('/usuarios/:id_usuario', rotasUsuarios.atualizar)
 
 //Rotas Categorias ✅
 app.post('/categorias', rotasCategorias.novaCategoria)
@@ -43,12 +48,12 @@ app.put('/categorias/:id_categoria', rotasCategorias.atualizarTodos)
 app.patch('/categorias/:id_categoria', rotasCategorias.atualizar)
 
 //Rotas Sub-Categorias ✅
-app.post('/subCategorias', autenticarToken, rotasSubCategorias.novaSubCategoria)
-app.get('/subCategorias', autenticarToken,  rotasSubCategorias.listarTodos)
-app.delete('/subCategorias/:id_subcategoria', autenticarToken, rotasSubCategorias.deletar)
-app.get('/subCategorias/:id_subcategoria', autenticarToken, rotasSubCategorias.consultaPorId)
-app.put('/subCategorias/:id_subcategoria', autenticarToken, rotasSubCategorias.atualizarTodos)
-app.patch('/subCategorias/:id_subcategoria', autenticarToken, rotasSubCategorias.atualizar)
+app.post('/subCategorias', rotasSubCategorias.novaSubCategoria)
+app.get('/subCategorias',  rotasSubCategorias.listarTodos)
+app.delete('/subCategorias/:id_subcategoria', rotasSubCategorias.deletar)
+app.get('/subCategorias/:id_subcategoria', rotasSubCategorias.consultaPorId)
+app.put('/subCategorias/:id_subcategoria', rotasSubCategorias.atualizarTodos)
+app.patch('/subCategorias/:id_subcategoria', rotasSubCategorias.atualizar)
 
 //Rotas Contas ✅
 app.post('/contas', autenticarToken, rotasContas.novaConta)
