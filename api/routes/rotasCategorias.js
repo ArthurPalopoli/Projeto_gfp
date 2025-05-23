@@ -4,13 +4,13 @@ import jwt from 'jsonwebtoken'
 
 class rotasCategorias{
     static async novaCategoria(req, res){
-        const {nome, tipo_transacao, gasto_fixo, ativo, id_usuario } = req.body;
+        const {nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone } = req.body;
 
         try{
             const categoria = await BD.query(`
-                INSERT INTO categorias(nome, tipo_transacao, gasto_fixo, ativo, id_usuario)
+                INSERT INTO categorias(nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone)
                 VALUES($1, $2, $3, $4, $5)
-                `, [nome, tipo_transacao, gasto_fixo, ativo, id_usuario])
+                `, [nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone])
 
             res.status(201).json({message: 'Categoria Cadastrada'})
         }catch(error){
@@ -65,8 +65,8 @@ class rotasCategorias{
 
         try {
             const categoria = await BD.query(
-                'UPDATE categorias SET nome = $1, tipo_transacao = $2, gasto_fixo = $3, ativo = $4, id_usuario = $5 WHERE id_categoria = $6 RETURNING *',
-                [nome, tipo_transacao, gasto_fixo, ativo, id_usuario, id_categoria]
+                'UPDATE categorias SET nome = $1, tipo_transacao = $2, gasto_fixo = $3, ativo = $4, id_usuario = $5, cor = $6, icone = $7 WHERE id_categoria = $8 RETURNING *',
+                [nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone, id_categoria]
             );
 
             return res.status(200).json({ message: "Categoria atualizada com sucesso", categoria: categoria.rows[0] });
@@ -80,7 +80,7 @@ class rotasCategorias{
 
     static async atualizar(req, res){
         const { id_categoria } = req.params;
-        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario} = req.body;
+        const { nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone} = req.body;
         try{
             //Inicializar arrays(vetores) para armazenar os campos e valores a serem atualizados
             const campos = [];
@@ -102,6 +102,14 @@ class rotasCategorias{
             if(id_usuario !== undefined){
                 campos.push(`id_usuario = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
                 valores.push(id_usuario);
+            }
+            if(cor !== undefined){
+                campos.push(`cor = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                valores.push(cor);
+            }
+            if(icone !== undefined){
+                campos.push(`icone = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo
+                valores.push(icone);
             }
             if(ativo !== undefined){
                 campos.push(`ativo = $${valores.length + 1}`) //Usa o tamanho do array para determinar o campo

@@ -24,10 +24,10 @@ app.listen(porta, () =>{
 
 
 //Rotas Usuarios ✅
-app.post('/usuarios', autenticarToken, rotasUsuarios.novoUsuario)
+app.post('/usuarios', rotasUsuarios.novoUsuario)
 app.post('/usuarios/login', rotasUsuarios.login)
 app.get('/usuarios/filtrarNome', rotasUsuarios.filtrarNome)
-app.get('/usuarios', autenticarToken, rotasUsuarios.listarTodos)
+app.get('/usuarios',  rotasUsuarios.listarTodos)
 app.delete('/usuarios/:id_usuario', rotasUsuarios.deletar)
 app.get('/usuarios/:id_usuario', autenticarToken, rotasUsuarios.consultaPorId)
 app.put('/usuarios/:id_usuario', autenticarToken, rotasUsuarios.atualizarTodos) 
@@ -53,11 +53,11 @@ app.patch('/subCategorias/:id_subcategoria', autenticarToken, rotasSubCategorias
 //Rotas Contas ✅
 app.post('/contas', autenticarToken, rotasContas.novaConta)
 app.get('/contas/filtrarNome', rotasContas.filtrarNome)
-app.get('/contas', autenticarToken,  rotasContas.listarTodos)
-app.delete('/contas/:id_conta', autenticarToken, rotasContas.deletar)
+app.get('/contas', rotasContas.listarTodos)
+app.delete('/contas/:id_conta',  rotasContas.deletar)
 app.get('/contas/:id_conta', autenticarToken, rotasContas.consultaPorId)
 app.put('/contas/:id_conta', autenticarToken, rotasContas.atualizarTodos)
-app.patch('/contas/:id_conta', autenticarToken, rotasContas.atualizar)
+app.patch('/contas/:id_conta', rotasContas.atualizar)
 
 
 //Rotas Transação ✅
