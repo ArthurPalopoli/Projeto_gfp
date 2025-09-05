@@ -25,12 +25,11 @@ const Login = ({ navigation }) => {
     
 
     const botaoLogin = async () => {
-
         try {
             if (email == '' || senha == '') {
                 throw new Error('Preencha todos os campos');
             }
-            //autenticando utilizando a API de backend com o fetch e recebendo o token
+
             const resposta = await fetch(`${enderecoServidor}/usuarios/login`, {
                 method: 'POST',
                 headers: {
@@ -41,16 +40,13 @@ const Login = ({ navigation }) => {
                     senha: senha,
                 }),
             });
-            
-          
 
-            if (resposta.ok) { 
-                 const dados = await resposta.json();
+            const dados = await resposta.json(); // mover para antes do if
+
+            if (resposta.ok) {
                 console.log('Login bem-sucedido:', dados);
-                // Aqui você pode armazenar o token em um estado global ou AsyncStorage, se necessário
-                AsyncStorage.setItem('UsuarioLogado', JSON.stringify({...dados, lembrar}));
-                navigation.navigate('MenuDrawer')
-
+                await AsyncStorage.setItem('UsuarioLogado', JSON.stringify({ ...dados, lembrar }));
+                navigation.navigate('MenuDrawer');
             } else {
                 throw new Error(dados.message || 'Erro ao fazer login');
             }
@@ -58,9 +54,9 @@ const Login = ({ navigation }) => {
         } catch (error) {
             console.error('Erro ao realizar login:', error);
             alert(error.message);
-            return;
         }
     };
+    
     useEffect(() => {
         const buscarUsuarioLogado = async () => {
             const usuarioLogado = await AsyncStorage.getItem("UsuarioLogado");

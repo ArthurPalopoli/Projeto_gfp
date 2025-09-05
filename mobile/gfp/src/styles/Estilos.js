@@ -112,8 +112,64 @@ const Estilos = {
     tipoTransacao: {
         fontSize: 12,
         color: 'black'
-    }
-        
+    },
+    modalFundo: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalConteudo: {
+        backgroundColor: corSecundaria,
+        padding: 16,
+        borderTopLeftRadius: 25,
+        borderTopRightRadius: 25,
+    },
+    modalTitulo: {
+        fontSize: 18,
+        color: '#fff',
+        marginBottom: 16,
+    },
+    inputModal: {
+        backgroundColor: '#fff',
+        flex: 1,
+        padding: 8,
+        borderRadius: 8,
+    },
+    modalBotoes: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 16,
+    },
+    corBotao: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        margin: 8,
+        borderWidth: 2,
+        borderColor: '#fff',
+    },
+    iconeBotao: {
+        width: 40,
+        height: 40,
+        padding: 8,
+        backgroundColor: "#333",
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    SeletorContainer: {
+        backgroundColor: '#1e1e1e',
+        padding: 16,
+        borderTopLeftRadius: 16,
+        borderTopRightRadius: 16,
+    },
+    listaModal: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'center',
+        gap: 8
+    }    
+  
 }
 
 export default Estilos;

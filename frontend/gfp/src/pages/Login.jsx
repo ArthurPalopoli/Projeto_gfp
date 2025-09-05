@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import styles from '../styles/Login.module.css';
 import logo from '../assets/logo.png';
 import { enderecoServidor } from '../utils'
 import { useNavigate } from 'react-router-dom';
+import { UsuarioContext } from '../UsuarioContext';
 
 
 // Import icons (using react-icons as an example)
@@ -10,6 +11,8 @@ import { useNavigate } from 'react-router-dom';
 import { MdEmail, MdLock, MdVisibility, MdVisibilityOff, MdBarChart, MdNotifications, MdTrendingUp } from 'react-icons/md';
 
 function Login() {
+  const { dadosUsuario, setDadosUsuario } = useContext(UsuarioContext);
+
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -39,6 +42,7 @@ function Login() {
       if (resposta.ok) {
         // Aqui você pode armazenar o token em um estado global ou AsyncStorage, se necessário
         localStorage.setItem('UsuarioLogado', JSON.stringify({...dados, lembrar}));
+        setDadosUsuario(dados); //Gravando os dados do usuário no context
         navigate("/principal")
       } else {
         throw new Error(dados.message || 'Erro ao fazer login');

@@ -9,7 +9,7 @@ class rotasCategorias{
         try{
             const categoria = await BD.query(`
                 INSERT INTO categorias(nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone)
-                VALUES($1, $2, $3, $4, $5)
+                VALUES($1, $2, $3, $4, $5, $6, $7)
                 `, [nome, tipo_transacao, gasto_fixo, ativo, id_usuario, cor, icone])
 
             res.status(201).json({message: 'Categoria Cadastrada'})
